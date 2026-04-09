@@ -28,7 +28,8 @@ export function loadSchema(): SchemaDefinition {
   const possiblePaths = [
     path.join(process.cwd(), "schema.json"),
     path.join(__dirname, "..", "..", "schema.json"),
-    path.resolve("schema.json")
+    "schema.json",
+    "/var/task/schema.json" // Vercel standard path
   ];
 
   for (const p of possiblePaths) {
@@ -37,14 +38,16 @@ export function loadSchema(): SchemaDefinition {
         const raw = fs.readFileSync(p, "utf-8");
         return JSON.parse(raw) as SchemaDefinition;
       } catch (e) {
-        console.error(`[Schema-Loader] Error parsing JSON at ${p}:`, e);
+        console.error(`[Schema-Loader] Found schema.json at ${p} but failed to parse:`, e);
       }
     }
   }
 
-  console.error("[Schema-Loader] All possible paths for schema.json failed.");
-  throw new Error("schema.json not found in any expected location.");
+  // Fallback cực kỳ an toàn để không sập App khi load module (Vercel Boot)
+  console.error("[Schema-Loader] CRITICAL: schema.json not found in any path.");
+  return { tables: {} }; 
 }
+
 
 
 
