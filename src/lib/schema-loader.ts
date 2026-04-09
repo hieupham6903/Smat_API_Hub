@@ -23,7 +23,8 @@ export interface SchemaDefinition {
 }
 
 export function loadSchema(): SchemaDefinition {
-  const schemaPath = path.resolve(__dirname, "../../schema.json");
+  // Tìm file schema.json an toàn hơn cho Vercel bằng process.cwd()
+  const schemaPath = path.join(process.cwd(), "schema.json");
 
   if (!fs.existsSync(schemaPath)) {
     throw new Error(`schema.json not found at: ${schemaPath}`);

@@ -17,14 +17,12 @@ import swaggerUi from "swagger-ui-express";
 import fs from "fs";
 import yaml from "yaml";
 import path from "path";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+// Đọc swagger file (Tìm path an toàn nhất cho cả dev và Vercel)
 let swaggerDocument: any;
 try {
-  const file = fs.readFileSync(path.resolve(__dirname, "../docker/swagger.yaml"), "utf8");
+  const swaggerPath = path.join(process.cwd(), "docker/swagger.yaml");
+  const file = fs.readFileSync(swaggerPath, "utf8");
   swaggerDocument = yaml.parse(file);
 } catch (e) {
   console.log("No swagger.yaml found yet.", e);
@@ -59,7 +57,17 @@ app.use("/auth", authRouter);
 app.use("/api", crudRouter);
 
 if (swaggerDocument) {
-  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument, {
+      customCssUrl: "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui.min.css",
+      customJs: [
+        "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-bundle.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-standalone-preset.js",
+      ]
+    })
+  );
 }
 
 app.get("/", (_req: Request, res: Response) => {
@@ -90,9 +98,10 @@ async function bootstrap(): Promise<void> {
     const validTables = getValidTableNames(schema);
     console.log(`Schema loaded. Tables: ${[...validTables].join(", ")}`);
 
-    console.log("Connecting to database...");
-    await prisma.$connect();
-    console.log("Database connected successfully");
+    console.log(`Schema loaded. Tables: ${[...validTables].join(", ")}`);
+
+    // Lưu ý: Không cần gọi await prisma.$connect() vì Prisma tự động Lazy Connect ở query đầu tiên.
+    // Nếu gọi $connect ở đây mà DB bị timeout, Vercel sẽ tự sập app.
 
     app.listen(PORT, () => {
       console.log("\n========================================");
@@ -103,9 +112,9 @@ async function bootstrap(): Promise<void> {
       console.log("========================================\n");
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
-    await prisma.$disconnect();
-    process.exit(1);
+    console.error("Failed to start server locally (Ignored on Vercel to prevent hard crash):", error);
+    // Vercel Serverless Function thỉnh thoảng sẽ giật lag lúc boot DB. 
+    // Tránh sử dụng process.exit(1) ở đây để ứng dụng không bị sập hoàn toàn (Crash 500 Bất Đắc Dĩ).
   }
 }
 
