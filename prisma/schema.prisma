@@ -1,0 +1,52 @@
+// FILE ĐƯỢC TỰ ĐỘNG SINH RA TỪ schema.json (DO NOT EDIT MANUALLY)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email      String @unique
+  password   String 
+  role       String? 
+  name       String? 
+
+  posts Post[]
+  comments Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("users")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title      String 
+  content    String? 
+  published  Boolean? 
+  authorId   Int 
+  author     User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  comments Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("posts")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  body       String 
+  postId     Int 
+  post       Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId   Int 
+  author     User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("comments")
+}

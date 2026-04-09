@@ -1,0 +1,155 @@
+openapi: 3.0.0
+info:
+  title: Smart API Hub
+  version: 1.0.0
+  description: Dynamic REST API platform automatically generated from schema.json.
+servers:
+  - url: http://localhost:3000
+paths:
+  /auth/register:
+    post:
+      summary: Đăng ký người dùng mới
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                name:
+                  type: string
+                role:
+                  type: string
+                  enum: [user, admin]
+      responses:
+        "201":
+          description: Đăng ký thành công
+  /auth/login:
+    post:
+      summary: Đăng nhập nhận JWT Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Đăng nhập thành công, trả về token
+  /api/{resource}:
+    get:
+      summary: Lấy danh sách resource với các filter, pagination, sort (Dynamic GET)
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Thành công
+    post:
+      summary: Tạo mới resource (yêu cầu Token)
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Authorization
+          required: true
+          schema: 
+            type: string
+      responses:
+        "201":
+          description: Thành công
+  /api/{resource}/{id}:
+    get:
+      summary: Lấy chi tiết 1 resource
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Thành công
+    put:
+      summary: Cập nhật toàn bộ item (yêu cầu Token)
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: header
+          name: Authorization
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200":
+          description: Thành công
+    patch:
+      summary: Cập nhật 1 phần item (yêu cầu Token)
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: header
+          name: Authorization
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200":
+          description: Thành công
+    delete:
+      summary: Xoá item (chỉ Admin)
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: header
+          name: Authorization
+          required: true
+          schema: 
+            type: string
+      responses:
+        "204":
+          description: Xoá thành công

@@ -1,0 +1,27 @@
+{
+  "tables": {
+    "users": {
+      "fields": {
+        "email":    { "type": "string",  "required": true,  "unique": true },
+        "password": { "type": "string",  "required": true },
+        "role":     { "type": "string",  "required": false },
+        "name":     { "type": "string",  "required": false }
+      }
+    },
+    "posts": {
+      "fields": {
+        "title":     { "type": "string",  "required": true },
+        "content":   { "type": "string",  "required": false },
+        "published": { "type": "boolean", "required": false },
+        "authorId":  { "type": "number",  "required": true, "reference": "users" }
+      }
+    },
+    "comments": {
+      "fields": {
+        "body":     { "type": "string", "required": true },
+        "postId":   { "type": "number", "required": true, "reference": "posts" },
+        "authorId": { "type": "number", "required": true, "reference": "users" }
+      }
+    }
+  }
+}

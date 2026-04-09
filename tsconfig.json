@@ -1,0 +1,39 @@
+{
+  // ============================================================
+  // TSCONFIG.JSON - Smart API Hub
+  // Cấu hình TypeScript Strict Mode cho Node.js ESM
+  // ============================================================
+  "compilerOptions": {
+    // --- Output ---
+    "rootDir": "./src",        // Source code nằm ở src/
+    "outDir": "./dist",        // Compiled output ra dist/
+
+    // --- Module System ---
+    // NodeNext = ESM (import/export thay vì require)
+    // Cần "type": "module" trong package.json
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",        // Node.js 20+ hỗ trợ ES2022
+
+    // --- Strict Mode (bắt buộc theo đề bài) ---
+    "strict": true,
+    "noUncheckedIndexedAccess": true,   // arr[0] trả về T | undefined
+    "exactOptionalPropertyTypes": true, // phân biệt undefined vs missing
+    "noImplicitReturns": true,          // hàm phải return ở mọi nhánh
+    "noFallthroughCasesInSwitch": true, // switch case phải có break/return
+
+    // --- Other ---
+    "skipLibCheck": true,      // bỏ qua check trong node_modules
+    "sourceMap": true,         // để debug ts source trong IDE
+    "declaration": true,       // sinh ra .d.ts files
+    "esModuleInterop": true,   // tương thích CommonJS imports
+    "resolveJsonModule": true, // import .json files (dùng schema.json)
+    "forceConsistentCasingInFileNames": true,
+
+    // --- Prisma ---
+    // Prisma client tự sinh code → cần include
+    "lib": ["ES2022"]
+  },
+  "include": ["src/**/*"],    // chỉ compile file trong src/
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}

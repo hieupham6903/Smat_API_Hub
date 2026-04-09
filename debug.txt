@@ -1,0 +1,68 @@
+﻿node.exe : C:\Users\MSI\Do
+cuments\Nodejs\node_module
+s\@prisma\client\src\runti
+me\utils\validatePrismaCli
+entOptions.ts:229
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (C  
+  :\Users\MSI\Do...tOpt   
+ ions.ts:229:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+    throw new PrismaClient
+ConstructorValidationError
+(
+          ^
+
+PrismaClientConstructorVal
+idationError: Using 
+engine type "client" 
+requires either "adapter" 
+or "accelerateUrl" to be 
+provided to PrismaClient 
+constructor.
+Read more at https://pris.
+ly/d/client-constructor
+    at 
+validateDependentOptions (
+C:\Users\MSI\Documents\Nod
+ejs\node_modules\@prisma\c
+lient\src\runtime\utils\va
+lidatePrismaClientOptions.
+ts:229:11)
+    at validatePrismaClien
+tOptions (C:\Users\MSI\Doc
+uments\Nodejs\node_modules
+\@prisma\client\src\runtim
+e\utils\validatePrismaClie
+ntOptions.ts:246:3)
+    at new t (C:\Users\MSI
+\Documents\Nodejs\node_mod
+ules\@prisma\client\src\ru
+ntime\getPrismaClient.ts:3
+42:7)
+    at <anonymous> (C:\Use
+rs\MSI\Documents\Nodejs\sr
+c\lib\prisma.ts:20:3)
+    at ModuleJob.run (node
+:internal/modules/esm/modu
+le_job:437:25)
+    at async node:internal
+/modules/esm/loader:639:26
+    at async asyncRunEntry
+PointWithESMLoader (node:i
+nternal/modules/run_main:1
+01:5)
+
+Node.js v25.9.0
