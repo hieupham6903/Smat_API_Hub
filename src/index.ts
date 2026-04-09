@@ -21,11 +21,28 @@ import path from "path";
 // Đọc swagger file (Tìm path an toàn nhất cho cả dev và Vercel)
 let swaggerDocument: any;
 try {
-  const swaggerPath = path.join(process.cwd(), "docker/swagger.yaml");
-  const file = fs.readFileSync(swaggerPath, "utf8");
-  swaggerDocument = yaml.parse(file);
+  const possibleSwaggerPaths = [
+    path.join(process.cwd(), "docker/swagger.yaml"),
+    path.join(process.cwd(), "dist/docker/swagger.yaml"),
+    path.resolve("docker/swagger.yaml")
+  ];
+  
+  let swaggerPath: string | undefined;
+  for (const p of possibleSwaggerPaths) {
+    if (fs.existsSync(p)) {
+      swaggerPath = p;
+      break;
+    }
+  }
+  
+  if (swaggerPath) {
+    const file = fs.readFileSync(swaggerPath, "utf8");
+    swaggerDocument = yaml.parse(file);
+  } else {
+    throw new Error("Could not find swagger.yaml in any possible paths");
+  }
 } catch (e) {
-  console.log("No swagger.yaml found yet.", e);
+  console.log("⚠️ Swagger loading skipped (deployment will continue):", (e as Error).message);
 }
 
 import { errorHandler, notFoundHandler } from "./middlewares/error-handler.js";
@@ -96,8 +113,6 @@ async function bootstrap(): Promise<void> {
 
     const schema = loadSchema();
     const validTables = getValidTableNames(schema);
-    console.log(`Schema loaded. Tables: ${[...validTables].join(", ")}`);
-
     console.log(`Schema loaded. Tables: ${[...validTables].join(", ")}`);
 
     // Lưu ý: Không cần gọi await prisma.$connect() vì Prisma tự động Lazy Connect ở query đầu tiên.

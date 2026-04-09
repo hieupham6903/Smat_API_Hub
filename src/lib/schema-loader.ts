@@ -25,15 +25,27 @@ export interface SchemaDefinition {
 import { createRequire } from "module";
 
 export function loadSchema(): SchemaDefinition {
-  try {
-    // Sử dụng require để Vercel Bundler (@vercel/nft) 100% tự động nhận diện và đóng gói schema.json vào Serverless
-    const require = createRequire(import.meta.url);
-    const schema = require("../../schema.json");
-    return schema as SchemaDefinition;
-  } catch (error: any) {
-    throw new Error(`schema.json không thể đọc được trên Vercel: ${error.message}`);
+  const possiblePaths = [
+    path.join(process.cwd(), "schema.json"),
+    path.join(__dirname, "..", "..", "schema.json"),
+    path.resolve("schema.json")
+  ];
+
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      try {
+        const raw = fs.readFileSync(p, "utf-8");
+        return JSON.parse(raw) as SchemaDefinition;
+      } catch (e) {
+        console.error(`[Schema-Loader] Error parsing JSON at ${p}:`, e);
+      }
+    }
   }
+
+  console.error("[Schema-Loader] All possible paths for schema.json failed.");
+  throw new Error("schema.json not found in any expected location.");
 }
+
 
 
 // Lấy danh sách tên bảng hợp lệ (dùng để whitelist chống Injection)

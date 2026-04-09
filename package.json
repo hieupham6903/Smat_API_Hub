@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon --watch \"src/**/*.ts\" --watch \"schema.json\" --exec \"tsx\" src/index.ts",
-    "build": "prisma generate && tsc",
+    "build": "tsx src/scripts/prebuild.ts && tsc",
     "postinstall": "prisma generate",
     "start": "node dist/index.js",
     "db:generate": "prisma generate",

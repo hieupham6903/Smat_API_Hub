@@ -104,4 +104,3 @@ datasource db {
     process.exit(1);
   }
 }
-
