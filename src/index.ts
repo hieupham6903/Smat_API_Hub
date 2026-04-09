@@ -118,14 +118,17 @@ async function bootstrap(): Promise<void> {
     // Lưu ý: Không cần gọi await prisma.$connect() vì Prisma tự động Lazy Connect ở query đầu tiên.
     // Nếu gọi $connect ở đây mà DB bị timeout, Vercel sẽ tự sập app.
 
-    app.listen(PORT, () => {
-      console.log("\n========================================");
-      console.log(`Smart API Hub is running!`);
-      console.log(`Local: http://localhost:${PORT}`);
-      console.log(`Health: http://localhost:${PORT}/health`);
-      console.log(`Env: ${process.env["NODE_ENV"] ?? "development"}`);
-      console.log("========================================\n");
-    });
+    if (!process.env.VERCEL) {
+      app.listen(PORT, () => {
+        console.log("\n========================================");
+        console.log(`Smart API Hub is running!`);
+        console.log(`Local: http://localhost:${PORT}`);
+        console.log(`Health: http://localhost:${PORT}/health`);
+        console.log(`Env: ${process.env["NODE_ENV"] ?? "development"}`);
+        console.log("========================================\n");
+      });
+    }
+
   } catch (error) {
     console.error("Failed to start server locally (Ignored on Vercel to prevent hard crash):", error);
     // Vercel Serverless Function thỉnh thoảng sẽ giật lag lúc boot DB. 
