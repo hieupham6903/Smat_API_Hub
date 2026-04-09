@@ -79,7 +79,12 @@ app.use(errorHandler);
 async function bootstrap(): Promise<void> {
   try {
     console.log("📋 Loading schema.json...");
-    autoMigrateDatabase();
+    
+    // Trên Vercel Runtime, môi trường là Read-Only nên không thể ghi file schema.prisma hay gọi execSync.
+    // Việc Migrate và Generate đã được chạy sẵn lúc Vercel Build (prebuild) rồi.
+    if (!process.env.VERCEL) {
+      autoMigrateDatabase();
+    }
 
     const schema = loadSchema();
     const validTables = getValidTableNames(schema);
