@@ -8,7 +8,7 @@ import { loadSchema } from "./schema-loader.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export function autoMigrateDatabase() {
+export function autoMigrateDatabase(onlyGenerate: boolean = false) {
   console.log("[Auto-Migrate] Bắt đầu đồng bộ schema.json sang Database...");
   const schema = loadSchema();
 
@@ -88,6 +88,12 @@ datasource db {
 
   // 4. Chạy Push xuống Database
   try {
+    if (onlyGenerate) {
+      console.log("⚙️ [Auto-Migrate] Đang chạy 'npx prisma generate' (Chỉ Build/Vercel)...");
+      execSync("npx prisma generate", { stdio: "inherit", cwd: path.resolve(__dirname, "../..") });
+      return;
+    }
+
     console.log("⚙️ [Auto-Migrate] Đang chạy 'npx prisma db push' để tạo bảng Postgres...");
     // Thực thi lệnh shell (chạy đồng bộ)
     execSync("npx prisma generate", { stdio: "inherit", cwd: path.resolve(__dirname, "../..") });

@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon --watch \"src/**/*.ts\" --watch \"schema.json\" --exec \"tsx\" src/index.ts",
-    "build": "tsc",
+    "build": "tsx src/scripts/prebuild.ts && tsc",
     "start": "node dist/index.js",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
