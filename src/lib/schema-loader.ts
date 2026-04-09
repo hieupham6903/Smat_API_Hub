@@ -22,22 +22,19 @@ export interface SchemaDefinition {
   tables: Record<string, SchemaTable>; 
 }
 
+import { createRequire } from "module";
+
 export function loadSchema(): SchemaDefinition {
-  // Tìm file schema.json an toàn hơn cho Vercel bằng process.cwd()
-  const schemaPath = path.join(process.cwd(), "schema.json");
-
-  if (!fs.existsSync(schemaPath)) {
-    throw new Error(`schema.json not found at: ${schemaPath}`);
-  }
-
-  const raw = fs.readFileSync(schemaPath, "utf-8");
-
   try {
-    return JSON.parse(raw) as SchemaDefinition;
-  } catch {
-    throw new Error("schema.json is not valid JSON");
+    // Sử dụng require để Vercel Bundler (@vercel/nft) 100% tự động nhận diện và đóng gói schema.json vào Serverless
+    const require = createRequire(import.meta.url);
+    const schema = require("../../schema.json");
+    return schema as SchemaDefinition;
+  } catch (error: any) {
+    throw new Error(`schema.json không thể đọc được trên Vercel: ${error.message}`);
   }
 }
+
 
 // Lấy danh sách tên bảng hợp lệ (dùng để whitelist chống Injection)
 export function getValidTableNames(schema: SchemaDefinition): Set<string> {
