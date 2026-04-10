@@ -1,8 +1,7 @@
-FROM node:20-alpine
+FROM node:20-slim
 
-# Cài đặt các dependencies hệ thống cần thiết
-# openssl cho Prisma, libc6-compat cho node-gyp nếu cần
-RUN apk add --no-cache openssl libc6-compat
+# Cài đặt OpenSSL cho Prisma (Debian sử dụng apt-get)
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
