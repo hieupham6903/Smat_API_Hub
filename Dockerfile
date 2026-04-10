@@ -1,4 +1,5 @@
-FROM node:20-alpine
+FROM node:22-alpine
+
 
 WORKDIR /app
 
@@ -9,17 +10,18 @@ RUN apk add --no-cache openssl
 COPY package.json package-lock.json* ./
 
 # Cài đặt dependencies
-RUN npm ci
+RUN npm install
+
 
 # Copy toàn bộ mã nguồn
 COPY . .
 
-# Generate Prisma Client và Build TypeScript
-RUN npx prisma generate
+# Build mã nguồn (tự động chạy prebuild để sinh schema và tsc để biên dịch)
 RUN npm run build
 
 # Expose port
 EXPOSE 3000
 
-# Command chạy môi trường
+# Sử dụng start script (node dist/index.js)
 CMD ["npm", "start"]
+
