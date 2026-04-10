@@ -1,27 +1,33 @@
-FROM node:22-alpine
+FROM node:20-alpine
 
+# Cài đặt các dependencies hệ thống cần thiết
+# openssl cho Prisma, libc6-compat cho node-gyp nếu cần
+RUN apk add --no-cache openssl libc6-compat
 
 WORKDIR /app
 
-# Cài đặt OpenSSL (Prisma cần)
-RUN apk add --no-cache openssl
-
-# Copy cấu hình package
+# Copy các file config package
 COPY package.json package-lock.json* ./
 
-# Cài đặt dependencies
-RUN npm install
+# Cấu hình npm để tránh đứng máy (timeout, log level)
+# Sử dụng --ignore-scripts để không chạy prisma generate tự động lúc này
+RUN npm config set fetch-retry-maxtimeout 600000 && \
+    npm config set fetch-retries 5 && \
+    npm install --no-audit --no-fund --ignore-scripts
 
+# Copy Prisma schema trước để generate client
+COPY prisma ./prisma/
+RUN npx prisma generate
 
 # Copy toàn bộ mã nguồn
 COPY . .
 
-# Build mã nguồn (tự động chạy prebuild để sinh schema và tsc để biên dịch)
+# Build mã nguồn
 RUN npm run build
 
 # Expose port
 EXPOSE 3000
 
-# Sử dụng start script (node dist/index.js)
+# Chạy ứng dụng
 CMD ["npm", "start"]
 
